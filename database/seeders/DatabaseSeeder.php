@@ -25,15 +25,15 @@ class DatabaseSeeder extends Seeder
                 'rol' => 'admin',
             ],
             [
-                'name' => 'Editor 1',
-                'email' => 'editor1@example.com',
-                'password' => 'Editor123*',
+                'name' => 'Juan',
+                'email' => 'juan@example.com',
+                'password' => '78106572',
                 'rol' => 'editor',
             ],
             [
-                'name' => 'Editor 2',
-                'email' => 'editor2@example.com',
-                'password' => 'Editor456*',
+                'name' => 'Jhon',
+                'email' => 'jhon@example.com',
+                'password' => '71654843',
                 'rol' => 'editor',
             ],
         ];
