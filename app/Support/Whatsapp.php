@@ -51,11 +51,9 @@ class Whatsapp
 
         $datos = [
             'Categoría'    => $proyecto->categoria?->nombre,
-            'Subcategoría' => $proyecto->subcategoria?->nombre,
-            'Modelo'       => $proyecto->nombre,
+            'Modelo' => $proyecto->subcategoria?->nombre,
             'Color'        => $proyecto->color,
             'Vidrio'       => $proyecto->vidrio,
-            'Medidas'      => $proyecto->medidas,
         ];
 
         foreach (array_filter($datos) as $etiqueta => $valor) {
