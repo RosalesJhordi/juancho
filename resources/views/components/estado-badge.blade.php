@@ -2,13 +2,13 @@
 
 @php
     $estilos = [
-        'nueva'      => 'bg-orange-500 text-white',
-        'contactada' => 'bg-blue-100 text-blue-800',
-        'cerrada'    => 'bg-emerald-100 text-emerald-800',
-        'descartada' => 'bg-slate-200 text-slate-600',
-        'publicado'  => 'bg-emerald-500 text-white',
-        'borrador'   => 'bg-amber-100 text-amber-800',
+        'publicado'  => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+        'borrador'   => 'bg-amber-50 text-amber-700 ring-amber-200',
     ];
+    $punto = ['publicado' => 'bg-emerald-500', 'borrador' => 'bg-amber-500'];
 @endphp
 
-<span class="inline-block whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold {{ $estilos[$estado] ?? 'bg-slate-200 text-slate-700' }}">{{ ucfirst($estado) }}</span>
+<span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold ring-1 {{ $estilos[$estado] ?? 'bg-slate-100 text-slate-700 ring-slate-200' }}">
+    <span class="h-1.5 w-1.5 rounded-full {{ $punto[$estado] ?? 'bg-slate-400' }}"></span>
+    {{ ucfirst($estado) }}
+</span>

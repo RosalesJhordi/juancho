@@ -1,15 +1,18 @@
-@props(['titulo', 'etiqueta' => null, 'desde' => '#2563EB', 'hasta' => '#7C3AED'])
+@props(['titulo', 'etiqueta' => null])
 
-<section class="relative overflow-hidden text-white" style="background:linear-gradient(120deg,{{ $desde }},{{ $hasta }})">
-    <span class="pointer-events-none absolute -right-10 -top-12 h-48 w-48 rounded-full bg-yellow-300/70" aria-hidden="true"></span>
-    <span class="pointer-events-none absolute -bottom-12 right-44 h-32 w-32 rounded-full bg-pink-400/60" aria-hidden="true"></span>
-    <span class="pointer-events-none absolute -left-8 bottom-2 h-20 w-20 rounded-full bg-cyan-300/50" aria-hidden="true"></span>
+{{-- Encabezado de página pública: fondo claro con cuadrícula de plano --}}
+<section class="relative overflow-hidden border-b border-slate-200 bg-gradient-to-b from-sky-50 to-white">
+    <div class="cuadricula pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent)]" aria-hidden="true"></div>
+    <span class="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-blue-200/40 blur-3xl" aria-hidden="true"></span>
+    <span class="pointer-events-none absolute -left-10 bottom-0 h-40 w-40 rounded-full bg-yellow-200/40 blur-3xl" aria-hidden="true"></span>
 
-    <div class="relative mx-auto max-w-6xl px-6 py-12">
+    <div class="relative mx-auto max-w-6xl px-6 py-12 sm:py-16">
         @if ($etiqueta)
-            <span class="inline-flex rounded-full bg-white/20 px-4 py-1 text-sm font-semibold">{{ $etiqueta }}</span>
+            <span class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-1 text-xs font-bold uppercase tracking-widest text-marca shadow-sm ring-1 ring-slate-200">
+                <span class="h-1.5 w-1.5 rounded-full bg-rojo"></span>{{ $etiqueta }}
+            </span>
         @endif
-        <h1 class="mt-3 font-display text-4xl font-extrabold sm:text-5xl">{{ $titulo }}</h1>
+        <h1 class="mt-4 font-display text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">{{ $titulo }}</h1>
         {{ $slot }}
     </div>
 </section>

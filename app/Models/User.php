@@ -15,12 +15,8 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     public const MODULOS = [
-        'proyectos'    => 'Proyectos y fotos',
-        'categorias'   => 'Categorías',
-        'sistemas'     => 'Sistemas de aluminio',
-        'tarifas'      => 'Tarifas',
-        'opciones'     => 'Opciones y accesorios',
-        'cotizaciones' => 'Cotizaciones',
+        'proyectos'  => 'Proyectos y fotos',
+        'categorias' => 'Categorías y subcategorías',
     ];
 
     protected $fillable = ['name', 'email', 'password', 'rol', 'permisos'];

@@ -10,7 +10,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Layout('layouts.publico')]
+#[Layout('layouts.portada')]
 #[Title('Acceso')]
 class Login extends Component
 {

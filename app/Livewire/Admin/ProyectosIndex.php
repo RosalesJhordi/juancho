@@ -60,7 +60,7 @@ class ProyectosIndex extends Component
     {
         $like = '%' . addcslashes($this->buscar, '%_\\') . '%';
 
-        $proyectos = Proyecto::with(['fotos', 'categoria'])
+        $proyectos = Proyecto::with(['fotos', 'categoria', 'subcategoria'])
             ->when($this->buscar !== '', fn ($q) => $q->where('nombre', 'like', $like))
             ->when($this->estado !== '', fn ($q) => $q->where('estado', $this->estado))
             ->latest()

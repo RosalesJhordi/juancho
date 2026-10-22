@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\Cliente;
-use App\Models\Cotizacion;
+use App\Models\Categoria;
+use App\Models\Foto;
 use App\Models\Proyecto;
-use App\Models\Sistema;
+use App\Models\Subcategoria;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -17,13 +17,14 @@ class Dashboard extends Component
     public function render()
     {
         return view('livewire.admin.dashboard', [
-            'publicados' => Proyecto::publicados()->count(),
-            'borradores' => Proyecto::where('estado', 'borrador')->count(),
-            'nuevas'     => Cotizacion::where('estado', 'nueva')->count(),
-            'clientes'   => Cliente::count(),
-            'ultimas'    => Cotizacion::with(['cliente', 'sistema'])->latest()->take(6)->get(),
-            // Sistemas activos que el cotizador no puede calcular todavía
-            'sinTarifa'  => Sistema::activos()->get()->filter(fn ($s) => ! $s->tarifaVigente())->values(),
+            'publicados'    => Proyecto::visibles()->count(),
+            'borradores'    => Proyecto::where('estado', 'borrador')->count(),
+            'fotos'         => Foto::count(),
+            'categorias'    => Categoria::count(),
+            'subcategorias' => Subcategoria::count(),
+            // Publicados sin fotos: el público no los ve
+            'sinFotos'      => Proyecto::where('estado', 'publicado')->whereDoesntHave('fotos')->orderBy('nombre')->get(['id', 'nombre']),
+            'ultimos'       => Proyecto::with(['categoria', 'subcategoria', 'fotos'])->latest()->take(6)->get(),
         ]);
     }
 }

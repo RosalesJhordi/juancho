@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Models\Proyecto;
+
 class Whatsapp
 {
     /** Devuelve solo dígitos, con código de país si el número es local. */
@@ -37,5 +39,49 @@ class Whatsapp
     public static function empresa(string $texto = ''): string
     {
         return self::enlace(config('catalogo.whatsapp'), $texto);
+    }
+
+    /**
+     * Mensaje que se envía a la empresa cuando el cliente cotiza una foto.
+     * Lleva categoría, subcategoría, datos del trabajo y el enlace a la foto elegida.
+     */
+    public static function textoConsulta(Proyecto $proyecto, ?string $fotoUrl = null): string
+    {
+        $lineas = ['Hola ' . config('catalogo.empresa') . ', quiero cotizar este trabajo:', ''];
+
+        $datos = [
+            'Categoría'    => $proyecto->categoria?->nombre,
+            'Subcategoría' => $proyecto->subcategoria?->nombre,
+            'Modelo'       => $proyecto->nombre,
+            'Color'        => $proyecto->color,
+            'Vidrio'       => $proyecto->vidrio,
+            'Medidas'      => $proyecto->medidas,
+        ];
+
+        foreach (array_filter($datos) as $etiqueta => $valor) {
+            $lineas[] = "• {$etiqueta}: {$valor}";
+        }
+
+        if ($fotoUrl) {
+            $lineas[] = '• Foto: ' . $fotoUrl;
+        }
+
+        $lineas[] = '';
+        $lineas[] = '¿Me pueden dar precio y disponibilidad?';
+
+        return implode("\n", $lineas);
+    }
+
+    /** Enlace de WhatsApp con el mensaje anterior (vacío si el número no está configurado). */
+    public static function consulta(Proyecto $proyecto, ?string $fotoUrl = null): string
+    {
+        return self::configurado() ? self::empresa(self::textoConsulta($proyecto, $fotoUrl)) : '';
+    }
+
+    public static function asesoria(): string
+    {
+        return self::configurado()
+            ? self::empresa('Hola ' . config('catalogo.empresa') . ', quiero pedir asesoría y contratar un servicio.')
+            : '';
     }
 }

@@ -7,9 +7,10 @@ use App\Livewire\Concerns\MensajesEs;
 use App\Models\Categoria;
 use App\Models\Foto;
 use App\Models\Proyecto;
-use App\Models\Sistema;
+use App\Models\Subcategoria;
 use App\Support\Fotos;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -29,7 +30,7 @@ class ProyectoFormulario extends Component
         'nombre'       => '',
         'descripcion'  => '',
         'categoria_id' => '',
-        'sistema_id'   => '',
+        'subcategoria_id' => '',
         'color'        => '',
         'vidrio'       => '',
         'medidas'      => '',
@@ -64,7 +65,11 @@ class ProyectoFormulario extends Component
             'form.nombre'       => ['required', 'string', 'max:150'],
             'form.descripcion'  => ['nullable', 'string', 'max:3000'],
             'form.categoria_id' => ['nullable', 'exists:categorias,id'],
-            'form.sistema_id'   => ['nullable', 'exists:sistemas,id'],
+            // La subcategoría debe pertenecer a la categoría elegida.
+            'form.subcategoria_id' => [
+                'nullable',
+                Rule::exists('subcategorias', 'id')->where('categoria_id', (int) $this->form['categoria_id']),
+            ],
             'form.color'        => ['nullable', 'string', 'max:60'],
             'form.vidrio'       => ['nullable', 'string', 'max:100'],
             'form.medidas'      => ['nullable', 'string', 'max:100'],
@@ -76,6 +81,14 @@ class ProyectoFormulario extends Component
             // Solo formatos seguros (sin SVG).
             'nuevasFotos.*'     => ['image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
         ];
+    }
+
+    /** Al cambiar la categoría, la subcategoría elegida deja de valer. */
+    public function updatedForm($valor, $campo): void
+    {
+        if ($campo === 'categoria_id') {
+            $this->form['subcategoria_id'] = '';
+        }
     }
 
     /** Descarta al subir los archivos que no sean imágenes válidas, para que la vista previa no falle. */
@@ -176,8 +189,10 @@ class ProyectoFormulario extends Component
             'fotos'      => $this->proyectoId
                 ? Foto::where('proyecto_id', $this->proyectoId)->orderByDesc('portada')->orderBy('id')->get()
                 : collect(),
-            'categorias' => Categoria::orderBy('nombre')->get(),
-            'sistemas'   => Sistema::orderBy('nombre')->get(),
+            'categorias' => Categoria::ordenadas()->get(),
+            'subcategorias' => $this->form['categoria_id'] !== ''
+                ? Subcategoria::where('categoria_id', (int) $this->form['categoria_id'])->ordenadas()->get()
+                : collect(),
         ]);
     }
 }

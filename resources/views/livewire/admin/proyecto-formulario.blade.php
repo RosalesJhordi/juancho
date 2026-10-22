@@ -1,11 +1,11 @@
 <div>
     <a href="{{ route('admin.proyectos') }}" class="text-sm text-slate-600 hover:text-slate-900">← Volver a proyectos</a>
-    <h1 class="mt-2 text-3xl font-extrabold text-violet-800">{{ $proyectoId ? 'Editar proyecto' : 'Nuevo proyecto' }}</h1>
+    <h1 class="mt-2 titulo-pagina">{{ $proyectoId ? 'Editar proyecto' : 'Nuevo proyecto' }}</h1>
 
     <form wire:submit="guardar" class="mt-8 grid gap-8 xl:grid-cols-[1fr_420px]">
 
         {{-- ============ DATOS ============ --}}
-        <div class="flex flex-col gap-4 rounded-2xl border-2 border-sky-100 bg-white shadow-sm p-6">
+        <div class="flex flex-col gap-4 tarjeta p-6">
             <label class="etiqueta">
                 Nombre del proyecto
                 <input type="text" wire:model="form.nombre" placeholder="Ej. Ventanal corredizo en sala" class="campo">
@@ -15,7 +15,7 @@
             <div class="grid gap-4 sm:grid-cols-2">
                 <label class="etiqueta">
                     Categoría
-                    <select wire:model="form.categoria_id" class="campo">
+                    <select wire:model.live="form.categoria_id" class="campo">
                         <option value="">Sin categoría</option>
                         @foreach ($categorias as $c)
                             <option value="{{ $c->id }}">{{ $c->nombre }}</option>
@@ -25,14 +25,14 @@
                 </label>
 
                 <label class="etiqueta">
-                    Sistema
-                    <select wire:model="form.sistema_id" class="campo">
-                        <option value="">Sin sistema</option>
-                        @foreach ($sistemas as $s)
+                    Subcategoría
+                    <select wire:model="form.subcategoria_id" @disabled($subcategorias->isEmpty()) class="campo">
+                        <option value="">{{ $form['categoria_id'] === '' ? 'Primero elige una categoría' : ($subcategorias->isEmpty() ? 'Esta categoría no tiene subcategorías' : 'Sin subcategoría') }}</option>
+                        @foreach ($subcategorias as $s)
                             <option value="{{ $s->id }}">{{ $s->nombre }}</option>
                         @endforeach
                     </select>
-                    @error('form.sistema_id') <span class="error">{{ $message }}</span> @enderror
+                    @error('form.subcategoria_id') <span class="error">{{ $message }}</span> @enderror
                 </label>
 
                 <label class="etiqueta">
@@ -45,24 +45,6 @@
                     Vidrio
                     <input type="text" wire:model="form.vidrio" placeholder="Ej. Templado 8 mm" class="campo">
                     @error('form.vidrio') <span class="error">{{ $message }}</span> @enderror
-                </label>
-
-                <label class="etiqueta">
-                    Medidas
-                    <input type="text" wire:model="form.medidas" placeholder="Ej. 2.40 × 1.50 m" class="campo">
-                    @error('form.medidas') <span class="error">{{ $message }}</span> @enderror
-                </label>
-
-                <label class="etiqueta">
-                    Ubicación
-                    <input type="text" wire:model="form.ubicacion" class="campo">
-                    @error('form.ubicacion') <span class="error">{{ $message }}</span> @enderror
-                </label>
-
-                <label class="etiqueta">
-                    Año
-                    <input type="text" inputmode="numeric" maxlength="4" wire:model="form.anio" class="campo">
-                    @error('form.anio') <span class="error">{{ $message }}</span> @enderror
                 </label>
 
                 <label class="etiqueta">
@@ -81,28 +63,23 @@
                 <textarea wire:model="form.descripcion" rows="5" class="campo"></textarea>
                 @error('form.descripcion') <span class="error">{{ $message }}</span> @enderror
             </label>
-
-            <label class="flex items-center gap-3 text-sm">
-                <input type="checkbox" wire:model="form.destacado" class="h-5 w-5 rounded border-sky-300 text-marca">
-                Mostrar como destacado en la página de inicio
-            </label>
         </div>
 
         {{-- ============ FOTOS ============ --}}
-        <div class="flex flex-col gap-5 self-start rounded-2xl border-2 border-sky-100 bg-white shadow-sm p-6">
+        <div class="flex flex-col gap-5 self-start tarjeta p-6">
             <div>
                 <p class="font-semibold">Fotos</p>
-                <p class="mt-1 text-sm text-slate-600">Puedes elegir varias a la vez (JPG, PNG o WEBP · máx. 8 MB cada una). La primera será la portada.</p>
+                <p class="subtitulo-pagina">Puedes elegir varias a la vez (JPG, PNG o WEBP · máx. 8 MB cada una). La primera será la portada.</p>
             </div>
 
-            <label class="relative flex min-h-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border-2 border-dashed border-violet-300 bg-violet-50 px-4 py-6 text-center text-sm font-semibold text-violet-800 hover:border-violet-600">
+            <label class="relative flex min-h-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border-2 border-dashed border-blue-300 bg-blue-50 px-4 py-6 text-center text-sm font-semibold text-blue-800 transition hover:border-marca hover:bg-blue-100">
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
                 <span class="font-medium">Seleccionar fotos</span>
                 <input type="file" wire:model="nuevasFotos" multiple accept="image/jpeg,image/png,image/webp"
                        class="absolute inset-0 h-full w-full cursor-pointer opacity-0" aria-label="Seleccionar fotos">
             </label>
 
-            <p wire:loading wire:target="nuevasFotos" class="text-sm text-slate-600">Cargando fotos…</p>
+            <p wire:loading wire:target="nuevasFotos" class="text-sm text-slate-500">Cargando fotos…</p>
 
             @error('nuevasFotos') <p class="error">{{ $message }}</p> @enderror
             @error('nuevasFotos.*') <p class="error">{{ $message }}</p> @enderror
@@ -135,7 +112,7 @@
                                 <div class="relative aspect-[4/3] overflow-hidden rounded-xl bg-slate-100">
                                     <img src="{{ $f->url }}" alt="" class="h-full w-full object-cover">
                                     @if ($f->portada)
-                                        <span class="absolute left-1 top-1 rounded-full bg-violet-600 px-2.5 py-0.5 text-xs font-bold text-white">Portada</span>
+                                        <span class="absolute left-1 top-1 rounded-full bg-marca px-2.5 py-0.5 text-xs font-bold text-white">Portada</span>
                                     @endif
                                 </div>
                                 <div class="flex gap-2">

@@ -14,7 +14,7 @@ class Proyecto extends Model
     public const ESTADOS = ['borrador' => 'Borrador', 'publicado' => 'Publicado'];
 
     protected $fillable = [
-        'nombre', 'slug', 'descripcion', 'categoria_id', 'sistema_id',
+        'nombre', 'slug', 'descripcion', 'categoria_id', 'subcategoria_id',
         'color', 'vidrio', 'medidas', 'ubicacion', 'anio', 'estado', 'destacado',
     ];
 
@@ -25,9 +25,9 @@ class Proyecto extends Model
         return $this->belongsTo(Categoria::class);
     }
 
-    public function sistema()
+    public function subcategoria()
     {
-        return $this->belongsTo(Sistema::class);
+        return $this->belongsTo(Subcategoria::class);
     }
 
     /** Primero la portada, luego por orden. */
@@ -36,14 +36,15 @@ class Proyecto extends Model
         return $this->hasMany(Foto::class)->orderByDesc('portada')->orderBy('orden')->orderBy('id');
     }
 
-    public function cotizaciones()
-    {
-        return $this->hasMany(Cotizacion::class);
-    }
-
     public function scopePublicados($query)
     {
         return $query->where('estado', 'publicado');
+    }
+
+    /** Lo que ve el público: publicado y con al menos una foto subida por el admin. */
+    public function scopeVisibles($query)
+    {
+        return $query->where('estado', 'publicado')->whereHas('fotos');
     }
 
     public function getPortadaAttribute(): ?Foto

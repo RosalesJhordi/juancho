@@ -21,6 +21,7 @@ class Categorias extends Component
     public ?int $editandoId = null;
     public string $nombre = '';
     public string $descripcion = '';
+    public int|string $orden = 0;
 
     public function editar(int $id): void
     {
@@ -29,6 +30,7 @@ class Categorias extends Component
         $this->editandoId = $c->id;
         $this->nombre = $c->nombre;
         $this->descripcion = (string) $c->descripcion;
+        $this->orden = $c->orden;
         $this->resetValidation();
     }
 
@@ -37,9 +39,14 @@ class Categorias extends Component
         $this->validate([
             'nombre'      => ['required', 'string', 'max:100', Rule::unique('categorias', 'nombre')->ignore($this->editandoId)],
             'descripcion' => ['nullable', 'string', 'max:500'],
+            'orden'       => ['nullable', 'integer', 'min:0', 'max:9999'],
         ]);
 
-        $datos = ['nombre' => trim($this->nombre), 'descripcion' => $this->descripcion ?: null];
+        $datos = [
+            'nombre'      => trim($this->nombre),
+            'descripcion' => $this->descripcion ?: null,
+            'orden'       => (int) $this->orden,
+        ];
 
         if ($this->editandoId) {
             Categoria::findOrFail($this->editandoId)->update($datos);
@@ -53,13 +60,14 @@ class Categorias extends Component
 
     public function cancelar(): void
     {
-        $this->reset(['editandoId', 'nombre', 'descripcion']);
+        $this->reset(['editandoId', 'nombre', 'descripcion', 'orden']);
         $this->resetValidation();
     }
 
     public function eliminar(int $id): void
     {
-        Categoria::findOrFail($id)->delete(); // los proyectos quedan sin categoría
+        // Sus subcategorías se eliminan con ella; los proyectos quedan sin categoría.
+        Categoria::findOrFail($id)->delete();
 
         if ($this->editandoId === $id) {
             $this->cancelar();
@@ -71,7 +79,7 @@ class Categorias extends Component
     public function render()
     {
         return view('livewire.admin.categorias', [
-            'categorias' => Categoria::withCount('proyectos')->orderBy('nombre')->get(),
+            'categorias' => Categoria::withCount(['proyectos', 'subcategorias'])->ordenadas()->get(),
         ]);
     }
 }
